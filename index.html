@@ -290,7 +290,7 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 .dev-icons a { font-size: 1.5rem; transition: 0.3s; }
 .dev-icons a:hover { transform: scale(1.2); }
 
-/* المودال */
+/* المودال والداش بورد */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; place-items: center; z-index: 200; }
 .modal-content { background: var(--bg-surface); width: 95%; max-width: 500px; padding: 25px; border-radius: 20px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
@@ -298,6 +298,18 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 .stat-val { font-size: 1.8rem; font-weight: bold; color: var(--primary-glow); display: block; }
 .stat-tit { font-size: 0.85rem; color: #94a3b8; }
 .revenue { color: var(--success); }
+
+/* قائمة الداش بورد المحدثة */
+.admin-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-main); padding: 10px; border-radius: 8px; margin-bottom: 8px;
+    border: 1px solid var(--border);
+}
+.admin-item img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
+.qty-input {
+    width: 60px; padding: 5px; background: #020617; border: 1px solid #334155;
+    color: white; text-align: center; border-radius: 5px;
+}
 
 </style>
 </head>
@@ -488,7 +500,7 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
                 <option value="شنط حريمي">شنط حريمي</option>
                 <option value="أحزمة">أحزمة</option>
             </select>
-            <button onclick="addProduct()" class="btn-main" style="background:var(--success)">نشر</button>
+            <button onclick="addProduct()" class="btn-main" style="background:var(--success)">نشر المنتج</button>
             <div id="adminList" style="margin-top:15px; border-top:1px solid #333; padding-top:10px"></div>
         </div>
 
@@ -502,10 +514,8 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         <div id="tab-settings" style="display:none">
             <label style="color:white; font-size:0.9rem">نص الشريط المتحرك:</label>
             <input id="nTicker" class="custom-input" placeholder="اكتب النص هنا...">
-            
             <label style="color:white; font-size:0.9rem">مدة العرض (بالساعات):</label>
             <input id="nTimer" type="number" class="custom-input" placeholder="عدد الساعات">
-            
             <button onclick="saveSettings()" class="btn-main" style="background:var(--success)">حفظ الإعدادات</button>
         </div>
 
@@ -523,16 +533,14 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 </div>
 
 <script>
-// --- البيانات الأساسية ---
 let products = JSON.parse(localStorage.getItem('shefo_products')) || [
     {id:1, name:"ساعة رولكس", price:850, img:"https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=300", cat:"ساعات رجالي", qty:5},
     {id:2, name:"سلسلة فضة", price:200, img:"https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300", cat:"إكسسوارات رجالي", qty:2},
 ];
 let ordersHistory = JSON.parse(localStorage.getItem('shefo_orders')) || [];
 let coupon = JSON.parse(localStorage.getItem('shefo_coupon')) || {code:"", val:0};
-// إعدادات الموقع
 let config = JSON.parse(localStorage.getItem('shefo_config')) || {
-    ticker: "✨ خصم خاص 20% على جميع الساعات! - شحن مجاني - استرجاع خلال يومين ✨",
+    ticker: "✨ استرجاع خلال يومين - شحن لجميع المحافظات - جودة أصلية ✨",
     timerHours: 4
 };
 
@@ -548,8 +556,7 @@ window.onload = () => {
     renderProd('all', document.querySelector('.nav-item'));
     updateCoupDisplay();
     startNotifications();
-    applyConfig(); // تطبيق الإعدادات
-    
+    applyConfig();
     window.onscroll = () => {
         if(window.scrollY > 300) document.getElementById('scrollTopBtn').classList.add('visible');
         else document.getElementById('scrollTopBtn').classList.remove('visible');
@@ -565,14 +572,10 @@ function save() {
 }
 function saveOrders() { localStorage.setItem('shefo_orders', JSON.stringify(ordersHistory)); }
 
-// تطبيق الإعدادات (الشريط والتايمر)
 function applyConfig() {
     document.getElementById('tickerText').innerText = config.ticker;
-    
-    // إعادة تشغيل التايمر بالمدة الجديدة
     if(timerInterval) clearInterval(timerInterval);
     let duration = config.timerHours * 60 * 60;
-    
     timerInterval = setInterval(function () {
         let hours = Math.floor(duration / 3600);
         let minutes = Math.floor((duration % 3600) / 60);
@@ -583,7 +586,6 @@ function applyConfig() {
     }, 1000);
 }
 
-// حفظ الإعدادات من الداش بورد
 function saveSettings() {
     let t = document.getElementById('nTicker').value;
     let h = document.getElementById('nTimer').value;
@@ -591,7 +593,7 @@ function saveSettings() {
     if(h) config.timerHours = h;
     save();
     applyConfig();
-    alert("تم حفظ الإعدادات بنجاح ✅");
+    alert("تم حفظ الإعدادات ✅");
 }
 
 function renderProd(cat, btn) {
@@ -651,6 +653,12 @@ function add(i) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2500);
     renderCart();
+}
+
+function updateQty(index, newQty) {
+    products[index].qty = parseInt(newQty);
+    save();
+    renderProd('all', document.querySelector('.nav-item.active'));
 }
 
 function renderCart() {
@@ -743,7 +751,17 @@ function addProduct() {
 }
 function renderAdmin() {
     let d = document.getElementById('adminList'); d.innerHTML="";
-    products.forEach((p,i)=>d.innerHTML+=`<div style="display:flex;justify-content:space-between;border-bottom:1px solid #333;padding:8px;align-items:center"><span style="color:white">${p.name} (الكمية: ${p.qty})</span><button onclick="del(${i})" style="color:red;border:none;background:none;cursor:pointer"><i class="fas fa-trash"></i></button></div>`);
+    products.forEach((p,i)=>d.innerHTML+=`
+    <div class="admin-item">
+        <div style="display:flex; align-items:center; gap:10px">
+            <img src="${p.img}">
+            <span>${p.name}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:5px">
+            <input type="number" class="qty-input" value="${p.qty}" onchange="updateQty(${i}, this.value)">
+            <button onclick="del(${i})" style="color:red;border:none;background:none;cursor:pointer"><i class="fas fa-trash"></i></button>
+        </div>
+    </div>`);
 }
 function del(i) { products.splice(i,1); save(); renderProd('all'); renderAdmin(); }
 function saveCoupon() { coupon={code:document.getElementById('nCCode').value, val:document.getElementById('nCVal').value}; save(); updateCoupDisplay(); alert("تم"); }
@@ -752,4 +770,3 @@ function scrollToCheckout() { document.getElementById('checkoutSection').scrollI
 </script>
 </body>
 </html>
-
