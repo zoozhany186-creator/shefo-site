@@ -2,297 +2,491 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>SHEFO</title>
+<title>SHEFO Store | متجر شيفو</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Tahoma;background:#0b1220;color:#fff}
-
-/* HEADER */
-header{background:#0f172a;padding:15px;position:sticky;top:0;z-index:9}
-h1{text-align:center;margin:0;cursor:pointer}
-nav{display:flex;gap:8px;overflow-x:auto;margin-top:10px}
-nav button{
-background:#1e293b;color:#fff;border:none;
-padding:8px 14px;border-radius:20px;cursor:pointer
+/* --- 1. أساسيات التصميم --- */
+:root {
+    --primary: #6366f1; 
+    --accent: #ec4899; 
+    --dark: #0f172a; 
+    --darker: #020617; 
+    --surface: #1e293b; 
+    --text: #f8fafc; 
+    --success: #22c55e; 
+    --danger: #ef4444;
 }
-nav button:hover{background:#6366f1}
-
-/* HERO */
-.hero{
-background:linear-gradient(135deg,#0f172a,#020617);
-margin:15px;border-radius:20px;padding:25px
+* {box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent;}
+body {
+    margin: 0; font-family: 'Tajawal', sans-serif;
+    background: var(--darker); color: var(--text); padding-bottom: 0;
 }
 
-/* PRODUCTS */
-#products{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-gap:15px;padding:20px
+/* --- 2. الهيدر --- */
+header {
+    background: rgba(15, 23, 42, 0.95); padding: 15px 20px;
+    position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #334155;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(5px);
 }
-.card{
-background:#111827;border-radius:15px;
-padding:10px;text-align:center;position:relative
+.header-right { display: flex; align-items: center; gap: 15px; }
+.brand {
+    font-size: 1.6rem; font-weight: 900;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    cursor: pointer; user-select: none;
 }
-.card img{width:100%;border-radius:10px}
-.price{color:#38bdf8}
-.stock{font-size:13px;opacity:.7}
-.card button{
-width:100%;background:#6366f1;border:none;
-color:white;padding:8px;border-radius:10px
-}
-.card button:disabled{background:#334155}
-.out{
-position:absolute;top:10px;left:10px;right:10px;
-background:#991b1b;padding:5px;border-radius:8px;font-size:12px
+.head-socials { display: flex; gap: 12px; border-right: 1px solid #334155; padding-right: 15px; }
+.head-socials a { color: #94a3b8; font-size: 1.1rem; transition: 0.3s; }
+.head-socials a:hover { color: white; transform: scale(1.2); }
+.head-socials a:nth-child(1):hover { color: #25D366; }
+.head-socials a:nth-child(2):hover { color: #1877F2; }
+.head-socials a:nth-child(3):hover { color: #E1306C; }
+
+.cart-wrap {position: relative; font-size: 1.4rem; cursor: pointer; color: white;}
+.badge {
+    position: absolute; top: -8px; left: -8px; background: var(--success);
+    color: black; font-weight: bold; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px;
 }
 
-/* SECTION */
-.section{background:#020617;padding:15px;margin:15px;border-radius:15px}
-.section button{
-background:linear-gradient(90deg,#22c55e,#4ade80);
-color:black;border:none;padding:12px;
-border-radius:12px;font-weight:bold;cursor:pointer
+/* --- 3. شريط الأقسام --- */
+.nav-scroller {
+    padding: 12px 15px; display: flex; gap: 10px; overflow-x: auto;
+    background: var(--dark); border-bottom: 1px solid #1e293b;
+    scrollbar-width: none;
 }
-input,select{
-width:100%;padding:10px;margin-bottom:8px;
-border-radius:10px;border:none;background:#0f172a;color:white
+.nav-scroller::-webkit-scrollbar {display: none;}
+.nav-btn {
+    background: var(--surface); color: #cbd5e1; border: 1px solid #334155;
+    padding: 8px 18px; border-radius: 25px; white-space: nowrap; cursor: pointer;
+    transition: 0.3s; font-family: inherit; font-size: 0.95rem;
 }
-
-/* TOTAL */
-.total-box{
-background:#0f172a;padding:10px;border-radius:10px;
-white-space:pre-line
+.nav-btn.active, .nav-btn:hover {
+    background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);
 }
 
-/* MODAL */
-.modal{
-position:fixed;inset:0;background:rgba(0,0,0,.7);
-display:none;align-items:center;justify-content:center;z-index:99
+/* --- 4. المنتجات --- */
+.hero {
+    margin: 20px 15px; padding: 40px 20px; border-radius: 20px;
+    background: linear-gradient(135deg, var(--dark), #312e81);
+    text-align: center; border: 1px solid #334155;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
-.modal-content{
-background:#020617;padding:20px;border-radius:15px;
-width:90%;max-width:450px
+#products {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px; padding: 15px;
 }
-.modal-content ul{list-style:none;padding:0}
-.modal-content li{
-display:flex;justify-content:space-between;margin:6px 0
+.card {
+    background: var(--surface); border-radius: 15px; padding: 10px;
+    border: 1px solid #334155; transition: 0.3s; display: flex; flex-direction: column;
+}
+.card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.card img {
+    width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 10px;
+}
+.card h4 {margin: 5px 0; font-size: 1rem; flex-grow: 1;}
+.price-tag {color: var(--primary); font-weight: bold; font-size: 1.1rem;}
+.cat-badge {
+    font-size: 0.7rem; color: #94a3b8; background: #0f172a; 
+    padding: 2px 8px; border-radius: 6px; align-self: flex-start; margin-bottom: 5px;
+}
+.add-btn {
+    width: 100%; margin-top: 10px; background: var(--primary); border: none;
+    color: white; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;
 }
 
-/* DASH */
-.dash-box{
-background:#0f172a;padding:10px;border-radius:10px;margin-bottom:10px
+/* --- 5. قسم الدفع --- */
+.checkout-section {
+    background: #111827; margin: 20px; padding: 25px;
+    border-radius: 20px; border: 1px solid #1f2937;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+}
+.checkout-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    font-size: 1.2rem; font-weight: bold; color: white;
+}
+.mini-cart {
+    background: #0f172a; padding: 15px; border-radius: 12px;
+    margin-bottom: 20px; border: 1px dashed #374151;
+}
+.cart-item-row {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px solid #1f2937; font-size: 0.9rem;
+}
+.cart-total-row {
+    display: flex; justify-content: space-between; margin-top: 10px;
+    font-weight: bold; font-size: 1.1rem; color: white;
+}
+.custom-input {
+    width: 100%; padding: 14px; background: #1f2937; border: 1px solid #374151;
+    color: white; border-radius: 12px; font-family: inherit; font-size: 0.95rem; margin-bottom: 10px;
+}
+.custom-input:focus {border-color: var(--success);}
+/* تنسيق خاص لرفع الملفات */
+input[type="file"].custom-input {
+    padding: 10px; background: var(--dark); cursor: pointer;
 }
 
-/* FOOTER */
-footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
+.btn-checkout {
+    width: 100%; background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: black; font-weight: bold; padding: 15px; border: none;
+    border-radius: 12px; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+
+/* --- 6. الفوتر --- */
+footer {
+    background-color: #020617; text-align: center;
+    padding: 40px 20px; margin-top: 40px; border-top: 1px solid #1e293b;
+}
+.footer-brand {font-size: 1.5rem; font-weight: bold; color: white; margin-bottom: 20px; display: block;}
+.footer-links {display: flex; justify-content: center; gap: 25px; margin-bottom: 25px; flex-wrap: wrap;}
+.footer-links a {color: #38bdf8; text-decoration: none; font-size: 1rem; font-weight: 500;}
+.copyright {color: #94a3b8; font-size: 0.9rem;}
+
+/* المودال */
+.modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-content {
+    background: var(--surface); width: 95%; max-width: 500px;
+    padding: 20px; border-radius: 15px; border: 1px solid #475569;
+    max-height: 90vh; overflow-y: auto;
+}
+.admin-item {display: flex; justify-content: space-between; padding: 10px; background: var(--dark); margin-bottom: 5px; border-radius: 6px;}
+.bg-red {background: var(--danger); color: white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;}
+.wa-float {
+    position: fixed; bottom: 20px; left: 20px; background: #25D366;
+    color: white; width: 60px; height: 60px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 30px; z-index: 90;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); text-decoration: none;
+}
 </style>
 </head>
-
 <body>
 
 <header>
-<h1 id="secret">⌚ SHEFO</h1>
-<nav>
-<button onclick="filterCat('all')">الكل</button>
-<button onclick="filterCat('men-watch')">ساعات رجالي</button>
-<button onclick="filterCat('women-watch')">ساعات حريمي</button>
-<button onclick="filterCat('men-perfume')">برفان رجالي</button>
-<button onclick="filterCat('women-perfume')">برفان حريمي</button>
-<button onclick="filterCat('cap')">كاب</button>
-<button onclick="filterCat('bags')">شنط حريمي</button>
-<button onclick="filterCat('belts')">أحزمة</button>
-<button onclick="filterCat('men-acc')">إكسسوارات رجالي</button>
-<button onclick="filterCat('women-acc')">إكسسوارات حريمي</button>
-</nav>
+    <div class="header-right">
+        <div class="brand" id="secretBtn" onclick="triggerSecret()">SHEFO</div>
+        <div class="head-socials">
+            <a href="https://wa.me/201070411245" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.facebook.com/share/1DYwnY6RxZ/" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/shefo_1k" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+    <div class="cart-wrap" onclick="scrollToCheckout()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge" id="cartCount">0</span>
+    </div>
 </header>
 
+<nav class="nav-scroller">
+    <button onclick="renderProducts('all', this)" class="nav-btn active">الكل</button>
+    <button onclick="renderProducts('ساعات رجالي', this)" class="nav-btn">ساعات رجالي</button>
+    <button onclick="renderProducts('ساعات حريمي', this)" class="nav-btn">ساعات حريمي</button>
+    <button onclick="renderProducts('إكسسوارات رجالي', this)" class="nav-btn">إكسسوارات رجالي</button> <button onclick="renderProducts('إكسسوارات حريمي', this)" class="nav-btn">إكسسوارات حريمي</button> <button onclick="renderProducts('شربات', this)" class="nav-btn">شربات</button>
+    <button onclick="renderProducts('بوكسرات', this)" class="nav-btn">بوكسرات</button>
+    <button onclick="renderProducts('برفان رجالي', this)" class="nav-btn">برفان رجالي</button>
+    <button onclick="renderProducts('برفان حريمي', this)" class="nav-btn">برفان حريمي</button>
+    <button onclick="renderProducts('كاب', this)" class="nav-btn">كاب</button>
+    <button onclick="renderProducts('شنط حريمي', this)" class="nav-btn">شنط حريمي</button>
+    <button onclick="renderProducts('أحزمة', this)" class="nav-btn">أحزمة</button>
+</nav>
+
 <div class="hero">
-<h2>✨ اختيارات SHEFO</h2>
-<p>جودة عالية – سعر مناسب – توصيل سريع</p>
+    <h2>🔥 SHEFO STORE</h2>
+    <p>أرقى الموديلات بأسعار خيالية</p>
 </div>
 
 <main id="products"></main>
 
-<div class="section">
-<h3>🚚 بيانات التوصيل</h3>
-<input id="cname" placeholder="الاسم بالكامل">
-<input id="cphone" placeholder="رقم الموبايل">
-<input id="caddress" placeholder="العنوان بالتفصيل">
-
-<input id="couponInput" placeholder="كود الخصم">
-<button onclick="applyCoupon()">تطبيق</button>
-
-<div class="total-box" id="totalBox">الإجمالي: 0 جنيه</div>
-<button onclick="showSummary()">🛒 مراجعة الطلب</button>
+<div class="checkout-section" id="checkoutSection">
+    <div class="checkout-header"><i class="fas fa-truck"></i> اتمام الطلب</div>
+    <div class="mini-cart">
+        <div id="cartListStub" style="color:#9ca3af; text-align:center; font-size:0.9rem">السلة فارغة</div>
+        <div id="cartItemsContainer"></div>
+        <div class="cart-total-row">
+            <span>الإجمالي:</span>
+            <span id="displayTotal">0 ج.م</span>
+        </div>
+        <div id="discountDisplay" style="color:var(--success); font-size:0.9rem; margin-top:5px; display:none"></div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input id="userCoupon" class="custom-input" placeholder="كود الخصم" style="margin:0">
+        <button onclick="applyUserCoupon()" class="custom-input" style="width: auto; background: var(--success); color: black; font-weight: bold; cursor: pointer; border:none">تطبيق</button>
+    </div>
+    <input id="cName" class="custom-input" placeholder="الاسم بالكامل">
+    <input id="cPhone" type="tel" class="custom-input" placeholder="رقم الموبايل">
+    <select id="cCity" class="custom-input">
+        <option value="">اختر المحافظة</option>
+        <option value="القاهرة">القاهرة</option>
+        <option value="الجيزة">الجيزة</option>
+        <option value="الإسكندرية">الإسكندرية</option>
+        <option value="الدقهلية">الدقهلية</option>
+        <option value="الشرقية">الشرقية</option>
+        <option value="المنوفية">المنوفية</option>
+        <option value="القليوبية">القليوبية</option>
+        <option value="البحيرة">البحيرة</option>
+        <option value="الغربية">الغربية</option>
+        <option value="بورسعيد">بورسعيد</option>
+        <option value="دمياط">دمياط</option>
+        <option value="الإسماعيلية">الإسماعيلية</option>
+        <option value="السويس">السويس</option>
+        <option value="كفر الشيخ">كفر الشيخ</option>
+        <option value="الفيوم">الفيوم</option>
+        <option value="بني سويف">بني سويف</option>
+        <option value="المنيا">المنيا</option>
+        <option value="أسيوط">أسيوط</option>
+        <option value="سوهاج">سوهاج</option>
+        <option value="قنا">قنا</option>
+        <option value="الأقصر">الأقصر</option>
+        <option value="أسوان">أسوان</option>
+        <option value="البحر الأحمر">البحر الأحمر</option>
+        <option value="الوادى الجديد">الوادى الجديد</option>
+        <option value="مطروح">مطروح</option>
+        <option value="شمال سيناء">شمال سيناء</option>
+        <option value="جنوب سيناء">جنوب سيناء</option>
+    </select>
+    <input id="cAddress" class="custom-input" placeholder="العنوان بالتفصيل">
+    <button onclick="sendOrder()" class="btn-checkout"><i class="fab fa-whatsapp"></i> مراجعة وإرسال الطلب</button>
 </div>
 
-<!-- SUMMARY -->
-<div class="modal" id="summaryModal">
-<div class="modal-content">
-<h3>🧾 ملخص الطلب</h3>
-<ul id="summaryList"></ul>
-<p id="summaryTotal"></p>
-<button onclick="summaryModal.style.display='none'">إغلاق</button>
-</div>
+<footer>
+    <div class="footer-brand">SHEFO</div>
+    <div class="footer-links">
+        <a href="https://wa.me/201070411245" target="_blank">واتساب</a>
+        <a href="https://www.facebook.com/share/1DYwnY6RxZ/" target="_blank">فيسبوك</a>
+        <a href="https://www.instagram.com/shefo_1k" target="_blank">إنستجرام</a>
+    </div>
+    <div class="copyright">SHEFO © 2026</div>
+</footer>
+<a href="https://wa.me/201070411245" class="wa-float"><i class="fab fa-whatsapp"></i></a>
+
+<div class="modal" id="passModal">
+    <div class="modal-content" style="text-align: center;">
+        <h3>🔐 دخول الإدارة</h3>
+        <input type="password" id="adminPass" class="custom-input" placeholder="كلمة المرور">
+        <button onclick="checkPass()" class="btn-checkout" style="margin-bottom:10px">دخول</button>
+        <button onclick="toggleModal('passModal')" class="bg-red" style="width:100%">إلغاء</button>
+    </div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="modal" id="dashboard">
-<div class="modal-content">
-<h3>🛠️ داشبورد الإدارة</h3>
+<div class="modal" id="dashModal">
+    <div class="modal-content">
+        <h2 style="color:var(--primary); text-align:center">⚙️ لوحة التحكم</h2>
+        <div style="display:flex; gap:10px; margin-bottom:15px">
+            <button onclick="showTab('tabProd')" class="nav-btn active">المنتجات</button>
+            <button onclick="showTab('tabCoupon')" class="nav-btn">الخصومات</button>
+        </div>
 
-<div class="dash-box">
-<h4>➕ إضافة منتج</h4>
-<input id="pname" placeholder="اسم المنتج">
-<input id="pprice" placeholder="السعر">
-<input id="pqty" placeholder="الكمية">
-<select id="pcat">
-<option value="men-watch">ساعات رجالي</option>
-<option value="women-watch">ساعات حريمي</option>
-<option value="men-perfume">برفان رجالي</option>
-<option value="women-perfume">برفان حريمي</option>
-<option value="cap">كاب</option>
-<option value="bags">شنط حريمي</option>
-<option value="belts">أحزمة</option>
-<option value="men-acc">إكسسوارات رجالي</option>
-<option value="women-acc">إكسسوارات حريمي</option>
-</select>
-<input type="file" id="pimg">
-<button onclick="addProduct()">إضافة المنتج</button>
-</div>
+        <div id="tabProd">
+            <h4>➕ إضافة منتج جديد</h4>
+            <input id="newPName" class="custom-input" placeholder="اسم المنتج">
+            
+            <label style="color:#aaa; font-size:0.9rem">صورة المنتج:</label>
+            <input type="file" id="newPImgFile" class="custom-input" accept="image/*">
+            
+            <input id="newPPrice" type="number" class="custom-input" placeholder="السعر">
+            
+            <label style="color:#aaa; font-size:0.9rem">اختر القسم:</label>
+            <select id="newPCat" class="custom-input">
+                <option value="ساعات رجالي">ساعات رجالي</option>
+                <option value="ساعات حريمي">ساعات حريمي</option>
+                <option value="إكسسوارات رجالي">إكسسوارات رجالي</option> <option value="إكسسوارات حريمي">إكسسوارات حريمي</option> <option value="شربات">شربات</option>
+                <option value="بوكسرات">بوكسرات</option>
+                <option value="برفان رجالي">برفان رجالي</option>
+                <option value="برفان حريمي">برفان حريمي</option>
+                <option value="كاب">كاب</option>
+                <option value="شنط حريمي">شنط حريمي</option>
+                <option value="أحزمة">أحزمة</option>
+                <option value="اخرى">اخرى</option>
+            </select>
+            
+            <button onclick="addNewProduct()" class="btn-checkout">نشر</button>
+            <hr style="border-color:#333; margin:20px 0">
+            <div id="adminProdList" style="max-height:200px; overflow-y:auto"></div>
+        </div>
 
-<div class="dash-box">
-<h4>🎟️ أكواد الخصم</h4>
-<input id="dcode" placeholder="كود الخصم">
-<input id="ddiscount" type="number" placeholder="نسبة الخصم %">
-<button onclick="addCoupon()">حفظ الكود</button>
-<ul id="couponList"></ul>
+        <div id="tabCoupon" style="display:none">
+            <input id="newCodeName" class="custom-input" placeholder="الكود">
+            <input id="newCodeVal" type="number" class="custom-input" placeholder="الخصم">
+            <button onclick="setCoupon()" class="btn-checkout">حفظ</button>
+            <p>الحالي: <strong id="activeCouponDisplay">--</strong></p>
+        </div>
+        <button onclick="toggleModal('dashModal')" class="bg-red" style="width:100%; margin-top:10px">خروج</button>
+    </div>
 </div>
-
-<button onclick="dashboard.style.display='none'">إغلاق</button>
-</div>
-</div>
-
-<footer>SHEFO © 2026</footer>
 
 <script>
-let products = JSON.parse(localStorage.getItem("products")) || [];
-let cart=[], clicks=0;
-let coupons = JSON.parse(localStorage.getItem("coupons")) || [];
-let discount = 0;
+let defaultProducts = [
+    {id:1, name:"ساعة رولكس", price:850, img:"https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=300", cat:"ساعات رجالي"},
+    {id:2, name:"سلسلة فضة", price:200, img:"https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300", cat:"إكسسوارات رجالي"},
+];
 
-const productsDiv=document.getElementById("products");
+let products = JSON.parse(localStorage.getItem('shefo_products')) || defaultProducts;
+let activeCoupon = JSON.parse(localStorage.getItem('shefo_coupon')) || {code:"", val:0};
+let cart = [];
+let clickCount = 0;
 
-function render(){
-productsDiv.innerHTML="";
-products.forEach((p,i)=>{
-let out=p.qty<=0;
-productsDiv.innerHTML+=`
-<div class="card ${p.cat}">
-${out?'<div class="out">نفد المخزون</div>':''}
-<img src="${p.img}">
-<h4>${p.name}</h4>
-<div class="price">${p.price} جنيه</div>
-<div class="stock">المتوفر: ${p.qty}</div>
-<button ${out?'disabled':''} onclick="addToCart(${i})">أضف للسلة</button>
-</div>`;
-});
-}
-render();
-
-function filterCat(cat){
-document.querySelectorAll(".card").forEach(c=>{
-c.style.display=(cat=="all"||c.classList.contains(cat))?"block":"none";
-});
-}
-
-function addProduct(){
-const file=pimg.files[0];
-if(!file)return;
-const reader=new FileReader();
-reader.onload=()=>{
-products.push({
-name:pname.value,
-price:+pprice.value,
-qty:+pqty.value,
-cat:pcat.value,
-img:reader.result
-});
-localStorage.setItem("products",JSON.stringify(products));
-render();
-alert("تمت إضافة المنتج ✅");
+window.onload = function() {
+    renderProducts('all', document.querySelector('.nav-btn'));
+    updateCouponDisplay();
 };
-reader.readAsDataURL(file);
+
+function saveData() {
+    // تنبيه: لو الصور كتيرة وكبيرة localStorage مش هتكفي
+    try {
+        localStorage.setItem('shefo_products', JSON.stringify(products));
+        localStorage.setItem('shefo_coupon', JSON.stringify(activeCoupon));
+    } catch (e) {
+        alert("تنبيه: المساحة ممتلئة! حاول استخدام صور أصغر.");
+    }
 }
 
-function addToCart(i){
-products[i].qty--;
-cart.push(products[i]);
-updateTotal();
-render();
+// العرض
+const pDiv = document.getElementById('products');
+function renderProducts(cat, btn) {
+    if(btn) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    pDiv.innerHTML = "";
+    let found = false;
+    products.forEach((p, index) => {
+        if(cat === 'all' || p.cat === cat) {
+            found = true;
+            pDiv.innerHTML += `
+            <div class="card">
+                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Shefo'">
+                <div class="cat-badge">${p.cat}</div>
+                <h4>${p.name}</h4>
+                <div class="price-tag">${p.price} ج.م</div>
+                <button class="add-btn" onclick="addToCart(${index})">أضف للسلة</button>
+            </div>`;
+        }
+    });
+    if(!found) pDiv.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:#888'>لا توجد منتجات هنا</p>";
 }
 
-function updateTotal(){
-let total=cart.reduce((s,p)=>s+p.price,0);
-let disc=total*discount/100;
-totalBox.innerText=
-`الإجمالي: ${total} جنيه
-الخصم: ${disc} جنيه
-بعد الخصم: ${total-disc} جنيه`;
+function addToCart(index) {
+    cart.push(products[index]);
+    document.getElementById('cartCount').innerText = cart.length;
+    renderCartSection();
+    scrollToCheckout();
 }
 
-function addCoupon(){
-let code=dcode.value.trim();
-let dis=+ddiscount.value;
-if(!code||!dis)return;
-coupons.push({code,discount:dis});
-localStorage.setItem("coupons",JSON.stringify(coupons));
-renderCoupons();
-dcode.value="";ddiscount.value="";
+function scrollToCheckout() { document.getElementById('checkoutSection').scrollIntoView({behavior: 'smooth'}); }
+
+function renderCartSection() {
+    const container = document.getElementById('cartItemsContainer');
+    const stub = document.getElementById('cartListStub');
+    if(cart.length === 0) {
+        container.innerHTML = ""; stub.style.display = 'block';
+        document.getElementById('displayTotal').innerText = "0 ج.م"; return 0;
+    }
+    stub.style.display = 'none'; container.innerHTML = "";
+    let total = 0;
+    cart.forEach((p, i) => {
+        total += parseInt(p.price);
+        container.innerHTML += `
+        <div class="cart-item-row">
+            <span>${p.name}</span>
+            <div><span>${p.price}</span> <span onclick="removeFromCart(${i})" style="color:#ef4444; cursor:pointer; margin-right:8px">❌</span></div>
+        </div>`;
+    });
+    let discount = 0;
+    let codeInput = document.getElementById('userCoupon').value;
+    if(codeInput === activeCoupon.code && activeCoupon.code !== "") {
+        discount = parseInt(activeCoupon.val);
+        document.getElementById('discountDisplay').style.display = "block";
+        document.getElementById('discountDisplay').innerText = `تم خصم ${discount} ج.م`;
+    } else { document.getElementById('discountDisplay').style.display = "none"; }
+    let finalTotal = Math.max(0, total - discount);
+    document.getElementById('displayTotal').innerText = finalTotal + " ج.م";
+    return finalTotal;
 }
 
-function renderCoupons(){
-couponList.innerHTML="";
-coupons.forEach((c,i)=>{
-couponList.innerHTML+=`
-<li>${c.code} - ${c.discount}%
-<button onclick="deleteCoupon(${i})">❌</button>
-</li>`;
-});
-}
-renderCoupons();
+function removeFromCart(i) { cart.splice(i, 1); document.getElementById('cartCount').innerText = cart.length; renderCartSection(); }
+function applyUserCoupon() { renderCartSection(); alert("تم التحقق"); }
 
-function deleteCoupon(i){
-coupons.splice(i,1);
-localStorage.setItem("coupons",JSON.stringify(coupons));
-renderCoupons();
-}
-
-function applyCoupon(){
-let c=couponInput.value.trim();
-let f=coupons.find(x=>x.code==c);
-discount=f?f.discount:0;
-updateTotal();
+function sendOrder() {
+    if(cart.length === 0) return alert("السلة فاضية!");
+    let name = document.getElementById('cName').value;
+    let phone = document.getElementById('cPhone').value;
+    let city = document.getElementById('cCity').value;
+    let addr = document.getElementById('cAddress').value;
+    if(!name || !phone || !city) return alert("اكمل البيانات المطلوبة");
+    let finalTotal = renderCartSection();
+    let items = cart.map(p => `▪️ ${p.name}`).join("%0a");
+    let msg = `*طلب جديد* 🚀%0a👤 ${name}%0a📱 ${phone}%0a🏙️ ${city} - ${addr}%0a--------------------%0a${items}%0a--------------------%0a💰 *الإجمالي: ${finalTotal} ج.م*`;
+    window.open(`https://wa.me/201070411245?text=${msg}`);
+    cart=[]; document.getElementById('cartCount').innerText=0; renderCartSection();
 }
 
-function showSummary(){
-summaryList.innerHTML="";
-cart.forEach(p=>summaryList.innerHTML+=`<li>${p.name} - ${p.price}</li>`);
-summaryTotal.innerText=totalBox.innerText;
-summaryModal.style.display="flex";
+// --- الإدارة ورفع الصور ---
+function triggerSecret() {
+    clearTimeout(window.secretTimer); clickCount++;
+    if(clickCount === 5) { toggleModal('passModal'); clickCount = 0; }
+    window.secretTimer = setTimeout(() => clickCount = 0, 1000);
+}
+function checkPass() {
+    if(document.getElementById('adminPass').value === "ziad1234") {
+        toggleModal('passModal'); toggleModal('dashModal'); renderAdminList(); document.getElementById('adminPass').value = "";
+    } else { alert("خطأ"); }
+}
+function showTab(tabId) {
+    document.getElementById('tabProd').style.display = 'none'; document.getElementById('tabCoupon').style.display = 'none';
+    document.getElementById(tabId).style.display = 'block';
 }
 
-secret.onclick=()=>{
-clicks++;
-if(clicks==5){
-let pass=prompt("باسورد الداشبورد");
-if(pass=="ziad1234") dashboard.style.display="flex";
-clicks=0;
+function addNewProduct() {
+    let name = document.getElementById('newPName').value;
+    let price = document.getElementById('newPPrice').value;
+    let cat = document.getElementById('newPCat').value;
+    let fileInput = document.getElementById('newPImgFile');
+    
+    if(!name || !price) { alert("اكتب الاسم والسعر"); return; }
+
+    // دالة لحفظ المنتج
+    const saveProduct = (imgSrc) => {
+        products.push({ id: Date.now(), name, img: imgSrc, price, cat });
+        saveData();
+        renderProducts('all', document.querySelectorAll('.nav-btn')[0]);
+        renderAdminList();
+        alert("تم النشر بنجاح ✅");
+        // تفريغ الحقول
+        document.getElementById('newPName').value = "";
+        document.getElementById('newPPrice').value = "";
+        fileInput.value = ""; 
+    };
+
+    if(fileInput.files && fileInput.files[0]) {
+        // لو فيه صورة مرفوعة، حولها لـ Base64
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            saveProduct(e.target.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        // لو مفيش صورة، حط صورة افتراضية
+        saveProduct("https://via.placeholder.com/300?text=No+Image");
+    }
 }
+
+function renderAdminList() {
+    let div = document.getElementById('adminProdList'); div.innerHTML = "";
+    products.forEach((p, i) => {
+        div.innerHTML += `<div class="admin-item"><span>${p.name}</span><button onclick="deleteProduct(${i})" class="bg-red">X</button></div>`;
+    });
 }
+function deleteProduct(i) { products.splice(i, 1); saveData(); renderProducts('all'); renderAdminList(); }
+function setCoupon() { activeCoupon = {code:document.getElementById('newCodeName').value, val:document.getElementById('newCodeVal').value}; saveData(); updateCouponDisplay(); alert("تم"); }
+function updateCouponDisplay() { document.getElementById('activeCouponDisplay').innerText = activeCoupon.code || "لا يوجد"; }
+function toggleModal(id) { let m = document.getElementById(id); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
 </script>
-
 </body>
 </html>
