@@ -13,43 +13,80 @@ body{margin:0;font-family:Tahoma;background:#0b1220;color:#fff}
 header{background:#0f172a;padding:15px;position:sticky;top:0;z-index:9}
 h1{text-align:center;margin:0;cursor:pointer}
 nav{display:flex;gap:8px;overflow-x:auto;margin-top:10px}
-nav button{background:#1e293b;color:#fff;border:none;padding:8px 14px;border-radius:20px}
+nav button{
+background:#1e293b;color:#fff;border:none;
+padding:8px 14px;border-radius:20px;cursor:pointer
+}
+nav button:hover{background:#6366f1}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,#0f172a,#020617);margin:15px;border-radius:20px;padding:25px}
-.hero button{background:#6366f1;border:none;color:#fff;padding:10px 18px;border-radius:12px}
+.hero{
+background:linear-gradient(135deg,#0f172a,#020617);
+margin:15px;border-radius:20px;padding:25px
+}
 
 /* PRODUCTS */
-#products{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:15px;padding:20px}
-.card{background:#111827;border-radius:15px;padding:10px;text-align:center;position:relative}
+#products{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+gap:15px;padding:20px
+}
+.card{
+background:#111827;border-radius:15px;
+padding:10px;text-align:center;position:relative
+}
 .card img{width:100%;border-radius:10px}
 .price{color:#38bdf8}
 .stock{font-size:13px;opacity:.7}
-.card button{width:100%;background:#6366f1;border:none;color:white;padding:8px;border-radius:10px}
+.card button{
+width:100%;background:#6366f1;border:none;
+color:white;padding:8px;border-radius:10px
+}
 .card button:disabled{background:#334155}
-.out{position:absolute;top:10px;left:10px;right:10px;background:#991b1b;padding:5px;border-radius:8px;font-size:12px}
+.out{
+position:absolute;top:10px;left:10px;right:10px;
+background:#991b1b;padding:5px;border-radius:8px;font-size:12px
+}
 
 /* SECTION */
 .section{background:#020617;padding:15px;margin:15px;border-radius:15px}
-input,select{width:100%;padding:10px;margin-bottom:8px;border-radius:10px;border:none;background:#0f172a;color:white}
+.section button{
+background:linear-gradient(90deg,#22c55e,#4ade80);
+color:black;border:none;padding:12px;
+border-radius:12px;font-weight:bold;cursor:pointer
+}
+input,select{
+width:100%;padding:10px;margin-bottom:8px;
+border-radius:10px;border:none;background:#0f172a;color:white
+}
 
-/* COUPON */
-.coupon-row{display:flex;gap:8px}
-.coupon-row button{background:#22c55e;border:none;border-radius:10px;padding:10px}
-.total-box{background:#0f172a;padding:10px;border-radius:10px;margin-top:8px;white-space:pre-line}
-
-/* BUTTON */
-button.main{background:linear-gradient(90deg,#22c55e,#4ade80);color:black;width:100%;padding:12px;border:none;border-radius:12px}
+/* TOTAL */
+.total-box{
+background:#0f172a;padding:10px;border-radius:10px;
+white-space:pre-line
+}
 
 /* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:99}
-.modal-content{background:#020617;padding:20px;border-radius:15px;width:90%;max-width:400px}
+.modal{
+position:fixed;inset:0;background:rgba(0,0,0,.7);
+display:none;align-items:center;justify-content:center;z-index:99
+}
+.modal-content{
+background:#020617;padding:20px;border-radius:15px;
+width:90%;max-width:450px
+}
 .modal-content ul{list-style:none;padding:0}
-.modal-content li{display:flex;justify-content:space-between;margin:6px 0}
+.modal-content li{
+display:flex;justify-content:space-between;margin:6px 0
+}
+
+/* DASH */
+.dash-box{
+background:#0f172a;padding:10px;border-radius:10px;margin-bottom:10px
+}
 
 /* FOOTER */
 footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
-.social a{margin:0 10px;color:#38bdf8;text-decoration:none}
 </style>
 </head>
 
@@ -57,12 +94,23 @@ footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
 
 <header>
 <h1 id="secret">⌚ SHEFO</h1>
+<nav>
+<button onclick="filterCat('all')">الكل</button>
+<button onclick="filterCat('men-watch')">ساعات رجالي</button>
+<button onclick="filterCat('women-watch')">ساعات حريمي</button>
+<button onclick="filterCat('men-perfume')">برفان رجالي</button>
+<button onclick="filterCat('women-perfume')">برفان حريمي</button>
+<button onclick="filterCat('cap')">كاب</button>
+<button onclick="filterCat('bags')">شنط حريمي</button>
+<button onclick="filterCat('belts')">أحزمة</button>
+<button onclick="filterCat('men-acc')">إكسسوارات رجالي</button>
+<button onclick="filterCat('women-acc')">إكسسوارات حريمي</button>
+</nav>
 </header>
 
 <div class="hero">
-<h2>✨ اختيارات فاخرة بأسعار تنافسية</h2>
+<h2>✨ اختيارات SHEFO</h2>
 <p>جودة عالية – سعر مناسب – توصيل سريع</p>
-<button onclick="window.scrollTo(0,600)">ابدأ التسوق</button>
 </div>
 
 <main id="products"></main>
@@ -73,13 +121,11 @@ footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
 <input id="cphone" placeholder="رقم الموبايل">
 <input id="caddress" placeholder="العنوان بالتفصيل">
 
-<div class="coupon-row">
-<input id="coupon" placeholder="كود الخصم">
+<input id="couponInput" placeholder="كود الخصم">
 <button onclick="applyCoupon()">تطبيق</button>
-</div>
 
 <div class="total-box" id="totalBox">الإجمالي: 0 جنيه</div>
-<button class="main" onclick="showSummary()">🛒 مراجعة الطلب</button>
+<button onclick="showSummary()">🛒 مراجعة الطلب</button>
 </div>
 
 <!-- SUMMARY -->
@@ -88,8 +134,7 @@ footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
 <h3>🧾 ملخص الطلب</h3>
 <ul id="summaryList"></ul>
 <p id="summaryTotal"></p>
-<button class="main" onclick="sendOrder()">إرسال واتساب</button>
-<button onclick="summaryModal.style.display='none'">رجوع</button>
+<button onclick="summaryModal.style.display='none'">إغلاق</button>
 </div>
 </div>
 
@@ -97,28 +142,46 @@ footer{text-align:center;padding:15px;background:#020617;margin-top:40px}
 <div class="modal" id="dashboard">
 <div class="modal-content">
 <h3>🛠️ داشبورد الإدارة</h3>
+
+<div class="dash-box">
+<h4>➕ إضافة منتج</h4>
 <input id="pname" placeholder="اسم المنتج">
 <input id="pprice" placeholder="السعر">
 <input id="pqty" placeholder="الكمية">
+<select id="pcat">
+<option value="men-watch">ساعات رجالي</option>
+<option value="women-watch">ساعات حريمي</option>
+<option value="men-perfume">برفان رجالي</option>
+<option value="women-perfume">برفان حريمي</option>
+<option value="cap">كاب</option>
+<option value="bags">شنط حريمي</option>
+<option value="belts">أحزمة</option>
+<option value="men-acc">إكسسوارات رجالي</option>
+<option value="women-acc">إكسسوارات حريمي</option>
+</select>
 <input type="file" id="pimg">
-<button class="main" onclick="addProduct()">إضافة المنتج</button>
+<button onclick="addProduct()">إضافة المنتج</button>
+</div>
+
+<div class="dash-box">
+<h4>🎟️ أكواد الخصم</h4>
+<input id="dcode" placeholder="كود الخصم">
+<input id="ddiscount" type="number" placeholder="نسبة الخصم %">
+<button onclick="addCoupon()">حفظ الكود</button>
+<ul id="couponList"></ul>
+</div>
+
 <button onclick="dashboard.style.display='none'">إغلاق</button>
 </div>
 </div>
 
-<footer>
-<b>SHEFO</b>
-<div class="social">
-<a href="https://wa.me/201070411245">واتساب</a>
-<a href="https://www.facebook.com/share/1DYwnY6RxZ/">فيسبوك</a>
-<a href="https://www.instagram.com/shefo_1k">إنستجرام</a>
-</div>
-© 2026
-</footer>
+<footer>SHEFO © 2026</footer>
 
 <script>
 let products = JSON.parse(localStorage.getItem("products")) || [];
-let cart=[], discount=0, clicks=0;
+let cart=[], clicks=0;
+let coupons = JSON.parse(localStorage.getItem("coupons")) || [];
+let discount = 0;
 
 const productsDiv=document.getElementById("products");
 
@@ -127,7 +190,7 @@ productsDiv.innerHTML="";
 products.forEach((p,i)=>{
 let out=p.qty<=0;
 productsDiv.innerHTML+=`
-<div class="card">
+<div class="card ${p.cat}">
 ${out?'<div class="out">نفد المخزون</div>':''}
 <img src="${p.img}">
 <h4>${p.name}</h4>
@@ -139,41 +202,78 @@ ${out?'<div class="out">نفد المخزون</div>':''}
 }
 render();
 
+function filterCat(cat){
+document.querySelectorAll(".card").forEach(c=>{
+c.style.display=(cat=="all"||c.classList.contains(cat))?"block":"none";
+});
+}
+
 function addProduct(){
-const file=document.getElementById("pimg").files[0];
+const file=pimg.files[0];
+if(!file)return;
 const reader=new FileReader();
 reader.onload=()=>{
 products.push({
 name:pname.value,
-price:Number(pprice.value),
-qty:Number(pqty.value),
+price:+pprice.value,
+qty:+pqty.value,
+cat:pcat.value,
 img:reader.result
 });
 localStorage.setItem("products",JSON.stringify(products));
 render();
-alert("تم إضافة المنتج ✅");
-}
-if(file) reader.readAsDataURL(file);
+alert("تمت إضافة المنتج ✅");
+};
+reader.readAsDataURL(file);
 }
 
 function addToCart(i){
-if(products[i].qty<=0)return;
 products[i].qty--;
 cart.push(products[i]);
-localStorage.setItem("products",JSON.stringify(products));
-updateTotal();render();
+updateTotal();
+render();
 }
 
 function updateTotal(){
 let total=cart.reduce((s,p)=>s+p.price,0);
-let disc=total*discount;
-totalBox.innerText=`الإجمالي: ${total} جنيه
+let disc=total*discount/100;
+totalBox.innerText=
+`الإجمالي: ${total} جنيه
 الخصم: ${disc} جنيه
 بعد الخصم: ${total-disc} جنيه`;
 }
 
+function addCoupon(){
+let code=dcode.value.trim();
+let dis=+ddiscount.value;
+if(!code||!dis)return;
+coupons.push({code,discount:dis});
+localStorage.setItem("coupons",JSON.stringify(coupons));
+renderCoupons();
+dcode.value="";ddiscount.value="";
+}
+
+function renderCoupons(){
+couponList.innerHTML="";
+coupons.forEach((c,i)=>{
+couponList.innerHTML+=`
+<li>${c.code} - ${c.discount}%
+<button onclick="deleteCoupon(${i})">❌</button>
+</li>`;
+});
+}
+renderCoupons();
+
+function deleteCoupon(i){
+coupons.splice(i,1);
+localStorage.setItem("coupons",JSON.stringify(coupons));
+renderCoupons();
+}
+
 function applyCoupon(){
-discount=coupon.value=="SALE10"?0.1:0;
+let c=couponInput.value.trim();
+let f=coupons.find(x=>x.code==c);
+discount=f?f.discount:0;
 updateTotal();
 }
 
@@ -182,12 +282,6 @@ summaryList.innerHTML="";
 cart.forEach(p=>summaryList.innerHTML+=`<li>${p.name} - ${p.price}</li>`);
 summaryTotal.innerText=totalBox.innerText;
 summaryModal.style.display="flex";
-}
-
-function sendOrder(){
-let msg=`طلب جديد SHEFO
-${totalBox.innerText}`;
-window.open("https://wa.me/201070411245?text="+encodeURIComponent(msg));
 }
 
 secret.onclick=()=>{
