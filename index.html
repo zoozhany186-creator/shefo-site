@@ -8,12 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-/* --- نفس التصميم بتاعك بالظبط --- */
+/* نفس التصميم بالظبط */
 :root { --bg-main: #020617; --bg-surface: #0f172a; --primary: #d97706; --primary-glow: #fbbf24; --text: #f1f5f9; --border: #1e293b; --success: #10b981; --danger: #ef4444; }
 * {box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent;}
 body { margin: 0; font-family: 'Tajawal', sans-serif; background: var(--bg-main); color: var(--text); padding-bottom: 0; overflow-x: hidden; }
 
-/* شاشة التحميل */
+/* التحميل */
 .splash-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s ease-out; }
 .splash-logo { font-size: 3rem; font-weight: 900; background: linear-gradient(45deg, var(--primary), var(--primary-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: pulseLogo 1.5s infinite alternate; }
 .loader-bar { width: 150px; height: 4px; background: #1e293b; margin-top: 20px; border-radius: 2px; overflow: hidden; }
@@ -21,7 +21,7 @@ body { margin: 0; font-family: 'Tajawal', sans-serif; background: var(--bg-main)
 @keyframes pulseLogo { from{transform:scale(1); opacity:0.8;} to{transform:scale(1.1); opacity:1;} }
 @keyframes loadProgress { 0%{width:0%} 100%{width:100%} }
 
-/* العناصر الأساسية */
+/* الشريط */
 .top-ticker { background: linear-gradient(90deg, #b45309, #d97706); color: white; font-size: 0.85rem; padding: 6px 0; overflow: hidden; white-space: nowrap; position: relative; z-index: 101; }
 .ticker-text { display: inline-block; animation: scrollText 20s linear infinite; padding-left: 100%; font-weight: bold; letter-spacing: 0.5px; }
 @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
@@ -567,27 +567,80 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         document.getElementById('tab-settings').style.display = t==='settings'?'block':'none';
     };
 
+    // ✨✨✨ الدالة الجديدة: ضغط الصور قبل الرفع ✨✨✨
     window.addProduct = async () => {
         let name = document.getElementById('nPName').value;
         let price = document.getElementById('nPPrice').value;
         let cat = document.getElementById('nPCat').value;
         let qty = document.getElementById('nPQty').value;
-        let file = document.getElementById('nPFile');
+        let fileInput = document.getElementById('nPFile');
 
         if(!name || !price || !qty) return alert("أكمل البيانات");
         
-        const finish = async (src) => {
-            await addDoc(productsColl, {name, price, cat, qty, img:src});
-            alert("تم النشر");
-            fetchData();
-            renderAdmin();
+        let btn = document.querySelector('button[onclick="addProduct()"]');
+        let oldText = btn.innerText;
+        btn.innerText = "⏳ جاري ضغط الصورة والرفع...";
+        btn.disabled = true;
+
+        const upload = async (finalImg) => {
+            try {
+                await addDoc(productsColl, {name, price, cat, qty, img:finalImg});
+                alert("تم النشر ✅");
+                document.getElementById('nPName').value = "";
+                document.getElementById('nPPrice').value = "";
+                document.getElementById('nPQty').value = "";
+                fileInput.value = "";
+                fetchData();
+                renderAdmin();
+            } catch(e) {
+                console.error(e);
+                alert("خطأ: " + e.message);
+            }
+            btn.innerText = oldText;
+            btn.disabled = false;
         };
 
-        if(file.files[0]) {
+        if(fileInput.files[0]) {
+            // ضغط الصورة
             let reader = new FileReader();
-            reader.onload = e => finish(e.target.result);
-            reader.readAsDataURL(file.files[0]);
-        } else finish("https://via.placeholder.com/300?text=SHEFO");
+            reader.onload = function(e) {
+                let img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    // تصغير الحجم لـ 800 بكسل كحد أقصى
+                    let maxWidth = 800;
+                    let maxHeight = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // تحويل لـ JPEG بجودة 70%
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    upload(dataUrl);
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            upload("https://via.placeholder.com/300?text=SHEFO");
+        }
     };
 
     window.renderAdmin = () => {
