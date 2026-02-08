@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-/* نفس التصميم بالظبط */
+/* --- نفس التصميم بالظبط --- */
 :root { --bg-main: #020617; --bg-surface: #0f172a; --primary: #d97706; --primary-glow: #fbbf24; --text: #f1f5f9; --border: #1e293b; --success: #10b981; --danger: #ef4444; }
 * {box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent;}
 body { margin: 0; font-family: 'Tajawal', sans-serif; background: var(--bg-main); color: var(--text); padding-bottom: 0; overflow-x: hidden; }
@@ -579,13 +579,13 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         
         let btn = document.querySelector('button[onclick="addProduct()"]');
         let oldText = btn.innerText;
-        btn.innerText = "⏳ جاري ضغط الصورة والرفع...";
+        btn.innerText = "🚀 بيترفع بسرعة...";
         btn.disabled = true;
 
         const upload = async (finalImg) => {
             try {
                 await addDoc(productsColl, {name, price, cat, qty, img:finalImg});
-                alert("تم النشر ✅");
+                alert("تم النشر في ثانية! ✅");
                 document.getElementById('nPName').value = "";
                 document.getElementById('nPPrice').value = "";
                 document.getElementById('nPQty').value = "";
@@ -594,14 +594,13 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
                 renderAdmin();
             } catch(e) {
                 console.error(e);
-                alert("خطأ: " + e.message);
+                alert("لسه في مشكلة: " + e.message);
             }
             btn.innerText = oldText;
             btn.disabled = false;
         };
 
         if(fileInput.files[0]) {
-            // ضغط الصورة
             let reader = new FileReader();
             reader.onload = function(e) {
                 let img = new Image();
@@ -609,9 +608,9 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
                     let canvas = document.createElement('canvas');
                     let ctx = canvas.getContext('2d');
                     
-                    // تصغير الحجم لـ 800 بكسل كحد أقصى
-                    let maxWidth = 800;
-                    let maxHeight = 800;
+                    // 👇 السر هنا: تصغير الأبعاد لـ 500
+                    let maxWidth = 500;
+                    let maxHeight = 500;
                     let width = img.width;
                     let height = img.height;
 
@@ -631,8 +630,8 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // تحويل لـ JPEG بجودة 70%
-                    let dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    // 👇 وهنا: تقليل الجودة لـ 0.5
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.5);
                     upload(dataUrl);
                 }
                 img.src = e.target.result;
@@ -696,4 +695,3 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 </script>
 </body>
 </html>
-
