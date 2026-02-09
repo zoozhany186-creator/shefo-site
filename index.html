@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-/* --- نفس التصميم بالظبط --- */
+/* --- نفس التصميم --- */
 :root { --bg-main: #020617; --bg-surface: #0f172a; --primary: #d97706; --primary-glow: #fbbf24; --text: #f1f5f9; --border: #1e293b; --success: #10b981; --danger: #ef4444; }
 * {box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent;}
 body { margin: 0; font-family: 'Tajawal', sans-serif; background: var(--bg-main); color: var(--text); padding-bottom: 0; overflow-x: hidden; }
@@ -266,13 +266,15 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         <h3 style="color:var(--primary); text-align:center">لوحة التحكم</h3>
         
         <div class="stats-grid">
-            <div class="stat-box"><span class="stat-val revenue" id="realRevenue">0 ج.م</span><span class="stat-tit">الأرباح</span></div>
+            <div class="stat-box"><span class="stat-val revenue" id="realRevenue">0 ج.م</span><span class="stat-tit">إجمالي المبيعات</span></div>
+            <div class="stat-box" style="border-color:var(--success)"><span class="stat-val" id="netProfit" style="color:var(--success)">0 ج.م</span><span class="stat-tit">صافي الربح 💰</span></div>
             <div class="stat-box"><span class="stat-val" id="realOrdersCount">0</span><span class="stat-tit">الطلبات</span></div>
             <div class="stat-box"><span class="stat-val" id="productsCount">0</span><span class="stat-tit">المنتجات</span></div>
         </div>
 
         <div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px; display:flex; gap:10px; overflow-x:auto">
             <button onclick="toggleTab('prod')" class="btn-main" style="font-size:0.9rem; padding:8px">المنتجات</button>
+            <button onclick="toggleTab('manual')" class="btn-main" style="font-size:0.9rem; padding:8px; background:var(--primary-glow); color:black">بيعة خارجية</button>
             <button onclick="toggleTab('coup')" class="btn-main" style="font-size:0.9rem; padding:8px">الخصومات</button>
             <button onclick="toggleTab('settings')" class="btn-main" style="font-size:0.9rem; padding:8px">الإعدادات</button>
         </div>
@@ -281,7 +283,12 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
             <input id="nPName" class="custom-input" placeholder="اسم المنتج">
             <label style="color:#888; font-size:0.85rem">صورة المنتج:</label>
             <input type="file" id="nPFile" class="custom-input" accept="image/*" style="padding:10px">
-            <input id="nPPrice" type="number" class="custom-input" placeholder="السعر">
+            
+            <div style="display:flex; gap:10px">
+                <input id="nPPrice" type="number" class="custom-input" placeholder="سعر البيع للزبون">
+                <input id="nPCost" type="number" class="custom-input" placeholder="سعر الشراء (التكلفة)" style="border-color:var(--success)">
+            </div>
+            
             <input id="nPQty" type="number" class="custom-input" placeholder="الكمية المتاحة">
             <select id="nPCat" class="custom-input">
                 <option value="ساعات رجالي">ساعات رجالي</option>
@@ -298,6 +305,14 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
             </select>
             <button onclick="addProduct()" class="btn-main" style="background:var(--success)">نشر المنتج</button>
             <div id="adminList" style="margin-top:15px; border-top:1px solid #333; padding-top:10px"></div>
+        </div>
+
+        <div id="tab-manual" style="display:none; text-align:center">
+            <h4 style="color:var(--primary-glow)">تسجيل بيعة تمت خارج الموقع</h4>
+            <input id="mDesc" class="custom-input" placeholder="تفاصيل (مثال: ساعة لصاحبي)">
+            <input id="mPrice" type="number" class="custom-input" placeholder="المبلغ اللي استلمته (بيع)">
+            <input id="mCost" type="number" class="custom-input" placeholder="الحاجة دي وقفت عليك بكام؟ (تكلفة)">
+            <button onclick="addManualOrder()" class="btn-main" style="background:var(--success)">تسجيل في الأرباح 💰</button>
         </div>
 
         <div id="tab-coup" style="display:none">
@@ -358,33 +373,26 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 
     // ---------------------- الدوال المساعدة (Firebase) ----------------------
     async function fetchData() {
-        // جلب المنتجات
         const pSnap = await getDocs(productsColl);
         products = [];
         pSnap.forEach(d => products.push({id: d.id, ...d.data()}));
-        
-        // جلب الإعدادات
         try {
             const sSnap = await getDoc(settingsDoc);
             if(sSnap.exists()) config = sSnap.data();
             applyConfig();
         } catch(e) {}
-
-        // جلب الكوبون
         try {
             const cSnap = await getDoc(couponDoc);
             if(cSnap.exists()) coupon = cSnap.data();
             updateCoupDisplay();
         } catch(e) {}
-        
         renderProd('all', document.querySelector('.nav-item'));
     }
 
-    // ---------------------- دوال العرض والتعامل (Attached to Window) ----------------------
-    
+    // ---------------------- دوال العرض والتعامل ----------------------
     window.onload = () => {
         setTimeout(() => { document.getElementById('splash').style.opacity='0'; setTimeout(()=>document.getElementById('splash').style.display='none',500); }, 2000);
-        fetchData(); // تحميل البيانات من فايربيز
+        fetchData(); 
         startNotifications();
         window.onscroll = () => {
             if(window.scrollY > 300) document.getElementById('scrollTopBtn').classList.add('visible');
@@ -406,7 +414,6 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         }, 1000);
     }
 
-    // جعل الدوال متاحة للـ HTML (مهم جداً عشان type="module")
     window.renderProd = (cat, btn) => {
         if(btn) { document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
         const div = document.getElementById('products'); div.innerHTML="";
@@ -505,11 +512,13 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         if(!name || !phone || !city) return alert("يرجى ملء البيانات");
         
         let total = renderCart();
+        // حساب التكلفة الإجمالية للأوردر عشان نعرف المكسب
+        let totalCost = cart.reduce((sum, p) => sum + (parseInt(p.costPrice) || 0), 0);
         
-        // حفظ الطلب في فايربيز للإحصائيات
         await addDoc(ordersColl, {
             date: new Date().toISOString(),
             total: total,
+            totalCost: totalCost, // تخزين التكلفة
             itemsCount: cart.length
         });
 
@@ -521,7 +530,6 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 
     window.scrollToCheckout = () => { document.getElementById('checkoutSection').scrollIntoView({behavior:'smooth'}); };
 
-    // ---------------------- إشعارات وهمية (Local) ----------------------
     function startNotifications() {
         setInterval(() => {
             if(document.hidden) return;
@@ -535,7 +543,6 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         }, 20000);
     }
 
-    // ---------------------- لوحة التحكم (Admin) ----------------------
     let clicks = 0;
     window.triggerSecret = () => { 
         clearTimeout(window.tm); clicks++; 
@@ -543,34 +550,79 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         window.tm=setTimeout(()=>clicks=0,1000); 
     };
 
+    // ✨✨✨ الدالة المعدلة: حساب صافي الربح ✨✨✨
     window.login = async () => {
         if(document.getElementById('passInp').value==="ziad1234") {
             document.getElementById('passModal').style.display='none';
             document.getElementById('dashModal').style.display='grid';
             
-            // تحديث الإحصائيات من فايربيز
-            const ordersSnap = await getDocs(ordersColl);
-            document.getElementById('realOrdersCount').innerText = ordersSnap.size;
+            // تصفير مبدئي
+            document.getElementById('realOrdersCount').innerText = "0";
+            document.getElementById('realRevenue').innerText = "0 ج.م";
+            document.getElementById('netProfit').innerText = "0 ج.م";
             document.getElementById('productsCount').innerText = products.length;
-            
-            let totalRev = 0;
-            ordersSnap.forEach(doc => totalRev += (doc.data().total || 0));
-            document.getElementById('realRevenue').innerText = totalRev + " ج.م";
+
+            try {
+                const ordersSnap = await getDocs(ordersColl);
+                if (!ordersSnap.empty) {
+                    document.getElementById('realOrdersCount').innerText = ordersSnap.size;
+                    let totalRev = 0;
+                    let totalCost = 0;
+                    
+                    ordersSnap.forEach(doc => {
+                        const data = doc.data();
+                        totalRev += (data.total || 0);
+                        totalCost += (data.totalCost || 0);
+                    });
+                    
+                    document.getElementById('realRevenue').innerText = totalRev + " ج.م";
+                    // صافي الربح = البيع - الشراء
+                    document.getElementById('netProfit').innerText = (totalRev - totalCost) + " ج.م";
+                }
+            } catch(e) { console.log("لسه مفيش طلبات"); }
             
             renderAdmin();
-        } else alert("خطأ");
+        } else alert("خطأ في الباسورد");
     };
 
     window.toggleTab = (t) => {
-        document.getElementById('tab-prod').style.display = t==='prod'?'block':'none';
-        document.getElementById('tab-coup').style.display = t==='coup'?'block':'none';
-        document.getElementById('tab-settings').style.display = t==='settings'?'block':'none';
+        ['prod','manual','coup','settings'].forEach(x => document.getElementById('tab-'+x).style.display='none');
+        document.getElementById('tab-'+t).style.display='block';
     };
 
-    // ✨✨✨ الدالة الجديدة: ضغط الصور قبل الرفع ✨✨✨
+    // ✨✨✨ إضافة طلب يدوي بالتكلفة ✨✨✨
+    window.addManualOrder = async () => {
+        let desc = document.getElementById('mDesc').value;
+        let price = document.getElementById('mPrice').value;
+        let cost = document.getElementById('mCost').value;
+        
+        if(!price) return alert("لازم تكتب سعر البيع!");
+
+        if(confirm(`تسجيل بيعة بـ ${price} جنيه؟`)) {
+            try {
+                await addDoc(ordersColl, {
+                    date: new Date().toISOString(),
+                    total: parseInt(price),
+                    totalCost: parseInt(cost) || 0, // بنحفظ التكلفة كمان
+                    itemsCount: 1,
+                    note: desc || "بيعة خارجية (يدوي)"
+                });
+                alert("تم التسجيل! صافي الربح هيتحدث دلوقتي 💰");
+                document.getElementById('mDesc').value = "";
+                document.getElementById('mPrice').value = "";
+                document.getElementById('mCost').value = "";
+                window.login(); 
+            } catch(e) {
+                alert("حصل خطأ");
+            }
+        }
+    };
+
+    // ✨✨✨ إضافة منتج مع حفظ التكلفة (سري) ✨✨✨
     window.addProduct = async () => {
         let name = document.getElementById('nPName').value;
         let price = document.getElementById('nPPrice').value;
+        let cost = document.getElementById('nPCost').value; // سعر التكلفة
         let cat = document.getElementById('nPCat').value;
         let qty = document.getElementById('nPQty').value;
         let fileInput = document.getElementById('nPFile');
@@ -579,22 +631,34 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
         
         let btn = document.querySelector('button[onclick="addProduct()"]');
         let oldText = btn.innerText;
-        btn.innerText = "🚀 بيترفع بسرعة...";
+        btn.innerText = "🔄 جاري المعالجة والرفع...";
         btn.disabled = true;
 
         const upload = async (finalImg) => {
             try {
-                await addDoc(productsColl, {name, price, cat, qty, img:finalImg});
-                alert("تم النشر في ثانية! ✅");
+                if(finalImg.length > 1048487) {
+                    alert("الصورة دي ضخمة جداً! جرب صورة غيرها.");
+                    btn.innerText = oldText;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                await addDoc(productsColl, {
+                    name, price, cat, qty, img:finalImg,
+                    costPrice: cost || 0 // حفظ التكلفة في قاعدة البيانات
+                });
+                
+                alert("تم النشر بنجاح! 🎉");
                 document.getElementById('nPName').value = "";
                 document.getElementById('nPPrice').value = "";
+                document.getElementById('nPCost').value = "";
                 document.getElementById('nPQty').value = "";
                 fileInput.value = "";
                 fetchData();
                 renderAdmin();
             } catch(e) {
                 console.error(e);
-                alert("لسه في مشكلة: " + e.message);
+                alert("خطأ: " + e.message);
             }
             btn.innerText = oldText;
             btn.disabled = false;
@@ -608,30 +672,28 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
                     let canvas = document.createElement('canvas');
                     let ctx = canvas.getContext('2d');
                     
-                    // 👇 السر هنا: تصغير الأبعاد لـ 500
                     let maxWidth = 500;
                     let maxHeight = 500;
                     let width = img.width;
                     let height = img.height;
 
                     if (width > height) {
-                        if (width > maxWidth) {
-                            height *= maxWidth / width;
-                            width = maxWidth;
-                        }
+                        if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
                     } else {
-                        if (height > maxHeight) {
-                            width *= maxHeight / height;
-                            height = maxHeight;
-                        }
+                        if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // 👇 وهنا: تقليل الجودة لـ 0.5
-                    let dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+                    let quality = 0.7;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                    while(dataUrl.length > 800000 && quality > 0.1) {
+                        quality -= 0.1;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    }
                     upload(dataUrl);
                 }
                 img.src = e.target.result;
@@ -659,7 +721,7 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 
     window.updateQty = async (id, newQty) => {
         await updateDoc(doc(db, "products", id), { qty: newQty });
-        fetchData(); // تحديث فوري
+        fetchData();
     };
 
     window.del = async (id) => {
@@ -695,3 +757,4 @@ footer { text-align: center; padding: 50px 20px; background: #000; margin-top: 5
 </script>
 </body>
 </html>
+
